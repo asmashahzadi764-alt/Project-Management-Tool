@@ -108,7 +108,7 @@ Secure API endpoints
 
 🚀 Installation & Setup
 1️⃣ Clone the Repository
-git clone https://github.com/your-username/project-management-tool.git
+
 
 2️⃣ Backend Setup
 cd backend

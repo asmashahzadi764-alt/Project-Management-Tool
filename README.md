@@ -31,11 +31,6 @@ The system includes secure authentication, project boards, task cards, and a rol
 - Assign tasks to team members
 - Update task status dynamically
 
-### 💬 Task Communication
-- Comment system inside each task
-- Team members can communicate in real time
-- Activity history for collaboration tracking
-
 ### 📊 Dashboard
 - Overview of all projects
 - Task statistics and progress tracking

@@ -29,37 +29,55 @@ const protect = require("./middleware/authMiddleware");
 const app = express();
 const server = http.createServer(app);
 
-// Socket.IO setup
+// ----------------------
+// CORS CONFIG (FIXED)
+// ----------------------
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://project-management-tool-six-olive.vercel.app"
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+}));
+
+app.options("*", cors());
+
+// Middleware
+app.use(express.json());
+
+// ----------------------
+// SOCKET.IO SETUP (FIXED)
+// ----------------------
 const io = new Server(server, {
-  cors: { origin: true, methods: ["GET", "POST", "PUT"] }
+  cors: {
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true
+  }
 });
 
-// Attach io to app for controllers
+// Attach io to app
 app.set("io", io);
 
-// Socket.IO connection
 io.on("connection", (socket) => {
   console.log("New client connected:", socket.id);
 
-  // Join project room
   socket.on("joinProject", (projectId) => {
     socket.join(projectId);
-    console.log(`Socket ${socket.id} joined project room: ${projectId}`);
   });
 
-  // Join user room for personal notifications
   socket.on("joinUser", (userId) => {
-    const room = `user:${userId}`;
-    socket.join(room);
-    console.log(`Socket ${socket.id} joined user room: ${room}`);
+    socket.join(`user:${userId}`);
   });
 
-  // Broadcast task update
   socket.on("taskUpdated", ({ projectId }) => {
     socket.to(projectId).emit("refreshTasks");
   });
 
-  // Broadcast comment added
   socket.on("commentAdded", ({ projectId }) => {
     socket.to(projectId).emit("refreshComments");
   });
@@ -69,14 +87,14 @@ io.on("connection", (socket) => {
   });
 });
 
-// Connect to MongoDB
+// ----------------------
+// DATABASE
+// ----------------------
 connectDB();
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-
-// API Routes
+// ----------------------
+// ROUTES
+// ----------------------
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/boards", boardRoutes);
@@ -84,18 +102,24 @@ app.use("/api/tasks", taskRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/activity", activityRoutes);
-// Dev-only helpers
 app.use("/api/dev", devRoutes);
 
 // Test route
-app.get("/", (req, res) => res.send("Project Management API Running"));
-
-// Protected test
-app.get("/api/protected", protect, (req, res) => {
-  res.json({ message: "Protected route accessed", user: req.user });
+app.get("/", (req, res) => {
+  res.send("Project Management API Running 🚀");
 });
 
-// Global error handling
+// Protected route
+app.get("/api/protected", protect, (req, res) => {
+  res.json({
+    message: "Protected route accessed",
+    user: req.user
+  });
+});
+
+// ----------------------
+// ERROR HANDLING
+// ----------------------
 process.on("unhandledRejection", (reason) => {
   console.error("Unhandled Rejection:", reason);
 });
@@ -105,6 +129,11 @@ process.on("uncaughtException", (err) => {
   process.exit(1);
 });
 
-// Start server
+// ----------------------
+// START SERVER
+// ----------------------
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});

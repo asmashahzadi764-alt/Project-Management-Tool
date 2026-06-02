@@ -1,6 +1,6 @@
 const { io } = require('socket.io-client');
 
-const base = process.argv[2] || 'http://localhost:5001';
+const base = process.argv[2] || 'https://project-management-tool-38dj.onrender.com';
 const userId = process.argv[3];
 const projectId = process.argv[4];
 

@@ -6,13 +6,14 @@ export default function Register() {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
 
-    // Basic validation
     if (!form.name || !form.email || !form.password) {
       setError("Please fill in all fields");
       return;
@@ -21,8 +22,10 @@ export default function Register() {
     setLoading(true);
     try {
       await API.post("/auth/register", form);
-      alert("Registered! Please login.");
-      navigate("/login");
+      setSuccess("Registered successfully! Redirecting to login...");
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed");
     } finally {
@@ -38,6 +41,7 @@ export default function Register() {
           <p className="register-subtitle">Sign up to start your journey</p>
 
           {error && <div className="error">{error}</div>}
+          {success && <div className="success">{success}</div>}
 
           <form onSubmit={handleSubmit} className="register-form">
             <input
@@ -72,7 +76,6 @@ export default function Register() {
         </div>
       </div>
 
-      {/* ======= CSS (Same file) ======= */}
       <style>{`
         * {
           box-sizing: border-box;
@@ -121,10 +124,19 @@ export default function Register() {
           text-align: center;
         }
 
+        .success {
+          background: rgba(79, 209, 197, 0.15);
+          color: #4fd1c5;
+          padding: 10px 12px;
+          border-radius: 10px;
+          margin-bottom: 15px;
+          text-align: center;
+        }
+
         .register-form {
           display: flex;
           flex-direction: column;
-          gap: 12px; /* ✅ proper spacing */
+          gap: 12px;
         }
 
         .register-form input {
@@ -136,6 +148,10 @@ export default function Register() {
           color: #fff;
           outline: none;
           transition: all 0.3s ease;
+        }
+
+        .register-form input::placeholder {
+          color: rgba(255, 255, 255, 0.4);
         }
 
         .register-form input:focus {

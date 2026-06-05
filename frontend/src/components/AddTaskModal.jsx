@@ -8,7 +8,6 @@ export default function AddTaskModal({ projectId, close, setTasks, boards }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // set default boardId when boards load
   useEffect(() => {
     if (boards?.length > 0) {
       setBoardId(boards[0]._id);
@@ -20,15 +19,12 @@ export default function AddTaskModal({ projectId, close, setTasks, boards }) {
       setError("Task title is required");
       return;
     }
-
     if (!boardId) {
       setError("Please select a board");
       return;
     }
-
     setLoading(true);
     setError("");
-
     try {
       const res = await API.post("/tasks", {
         title,
@@ -36,10 +32,7 @@ export default function AddTaskModal({ projectId, close, setTasks, boards }) {
         projectId,
         boardId,
       });
-
-      // Backend response fix:
       const newTask = res.data.task || res.data;
-
       setTasks((prev) => [newTask, ...prev]);
       close();
     } catch (err) {
@@ -74,7 +67,7 @@ export default function AddTaskModal({ projectId, close, setTasks, boards }) {
           {boards?.length > 0 ? (
             boards.map((board) => (
               <option key={board._id} value={board._id}>
-                {board.name || board.title || "Board"}
+                {board.title || board.name || "Board"}
               </option>
             ))
           ) : (
@@ -87,7 +80,6 @@ export default function AddTaskModal({ projectId, close, setTasks, boards }) {
         <button onClick={addTask} disabled={loading}>
           {loading ? "Adding..." : "Add Task"}
         </button>
-
         <button className="cancel" onClick={close}>
           Cancel
         </button>
@@ -106,7 +98,6 @@ export default function AddTaskModal({ projectId, close, setTasks, boards }) {
           justify-content: center;
           z-index: 999;
         }
-
         .modal-inner {
           width: 420px;
           background: #1e1e2f;
@@ -116,7 +107,6 @@ export default function AddTaskModal({ projectId, close, setTasks, boards }) {
           box-shadow: 0 12px 30px rgba(0,0,0,0.5);
           color: white;
         }
-
         input, textarea, select {
           width: 100%;
           margin-top: 8px;
@@ -128,7 +118,10 @@ export default function AddTaskModal({ projectId, close, setTasks, boards }) {
           color: white;
           outline: none;
         }
-
+        select option {
+          background: #1e1e2f;
+          color: white;
+        }
         button {
           width: 100%;
           padding: 12px;
@@ -137,17 +130,22 @@ export default function AddTaskModal({ projectId, close, setTasks, boards }) {
           cursor: pointer;
           margin-top: 10px;
           font-weight: 600;
+          background: linear-gradient(135deg, #4fd1c5, #2a8cff);
+          color: #fff;
+          transition: opacity 0.2s ease;
         }
-
         button:hover {
           opacity: 0.9;
         }
-
+        button:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
         .cancel {
           background: transparent;
           border: 1px solid rgba(255,255,255,0.4);
+          color: rgba(255,255,255,0.8);
         }
-
         .error {
           color: #f7530d;
           margin-top: -6px;

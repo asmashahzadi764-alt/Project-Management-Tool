@@ -67,7 +67,7 @@ export default function AddTaskModal({ projectId, close, setTasks, boards }) {
           {boards?.length > 0 ? (
             boards.map((board) => (
               <option key={board._id} value={board._id}>
-                {board.title || board.name || "Board"}
+                {board.name || board.title || "Board"}
               </option>
             ))
           ) : (

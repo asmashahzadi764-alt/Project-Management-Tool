@@ -9,11 +9,10 @@ import CreateProject from "./pages/CreateProject";
 export default function App() {
   return (
     <Routes>
-      {/* Auth */}
       <Route path="/" element={<Login />} />
+      <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      {/* Main Layout */}
       <Route element={<MainLayout />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/create-project" element={<CreateProject />} />

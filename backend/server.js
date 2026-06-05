@@ -44,7 +44,7 @@ app.use(cors({
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 }));
 
-app.options("*", cors());
+app.options("/*splat", cors());
 
 // Middleware
 app.use(express.json());

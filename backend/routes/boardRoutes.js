@@ -8,8 +8,17 @@ router.get("/:projectId", protect, async (req, res) => {
   try {
     const { projectId } = req.params;
 
-    // Boards (Backlog, To Do, In Progress)
-    const boards = await Board.find();  
+    // us project ki boards fetch karo
+    let boards = await Board.find({ projectId }).sort("order");
+
+    // agar boards nahi hain toh 3 default boards auto-create karo
+    if (!boards || boards.length === 0) {
+      boards = await Board.insertMany([
+        { name: "To Do", projectId, order: 0 },
+        { name: "In Progress", projectId, order: 1 },
+        { name: "Done", projectId, order: 2 },
+      ]);
+    }
 
     const boardsWithTasks = await Promise.all(
       boards.map(async (board) => {
@@ -17,7 +26,6 @@ router.get("/:projectId", protect, async (req, res) => {
           boardId: board._id,
           projectId: projectId,
         });
-
         return {
           ...board.toObject(),
           tasks,
